@@ -43,11 +43,11 @@
                     </div>
                     <div class="stats-grid">
                         <div class="stat-item">
-                            <span class="stat-num">3,800+</span>
+                            <span class="stat-num" id="sub-count">3,800+</span>
                             <small>Subscribers</small>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-num">800K+</span>
+                            <span class="stat-num" id="view-count">800K+</span>
                             <small>Total Views</small>
                         </div>
                     </div>
@@ -194,6 +194,54 @@
             <p class="copyright">© 2026 DJ LINDI. All rights reserved.</p>
         </div>
 
-    </div> </body>
+    </div> <div class="glass-card contact-section">
+            <p class="copyright">© 2026 DJ LINDI. All rights reserved.</p>
+        </div>
 
-</html>
+    </div> 
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    async function updateYouTubeStats() {
+        const channelId = 'UCtwtUMcvFgJPDxCN9ouB0Lg'; 
+        
+        try {
+            const response = await fetch(`https://api.subscribercounter.nl/api/youtube-subscriber-count/${channelId}/realtime`);
+            if (!response.ok) throw new Error('Network response was not ok');
+            
+            const data = await response.json();
+            
+            if (data) {
+                // 1. 구독자 수 업데이트
+                if (data.counter) {
+                    const subElement = document.getElementById('sub-count');
+                    subElement.innerText = Number(data.counter).toLocaleString() + '+';
+                }
+                
+                // 2. 총 조회수 업데이트
+                if (data.youtube_views) {
+                    const viewElement = document.getElementById('view-count');
+                    const views = Number(data.youtube_views);
+                    
+                    // 조회수가 너무 길면 800,000+ 보다는 800K+ 가 예쁘므로 변환 로직 추가
+                    if (views >= 1000000) {
+                        viewElement.innerText = (views / 1000000).toFixed(1) + 'M+';
+                    } else if (views >= 1000) {
+                        viewElement.innerText = (views / 1000).toFixed(0) + 'K+';
+                    } else {
+                        viewElement.innerText = views.toLocaleString() + '+';
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("유튜브 데이터를 가져오는데 실패했습니다:", error);
+        }
+    }
+
+    // 접속 시 즉시 실행
+    updateYouTubeStats();
+    
+    // 24시간(86,400,000ms)마다 업데이트
+    setInterval(updateYouTubeStats, 86400000);
+});
+</script>
+</body> </html>
